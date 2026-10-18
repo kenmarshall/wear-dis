@@ -9,7 +9,7 @@ Build mode: fast
 
 ## Slices
 
-- [ ] **1. You describe an event and see five ranked outfits with the "why"**
+- [x] **1. You describe an event and see five ranked outfits with the "why"**
   Becomes usable: A running Next.js app at localhost:3000. Type an event, a loading animation plays, and five ranked outfit cards appear, best first. Each card shows every piece with a color swatch, plus the "why it works" (occasion + colors). It's already styled in the fashion-store look. No follow-ups or links yet.
   Why now: This is the unique kernel and the biggest risk in one slice. It proves Opus 5.5 returns valid structured outfits, measures how long that takes (build-time check 1), and confirms `fallbacks` with `messages.parse` (check 3). Bootstrapping is folded in here.
   PRD ref: `prd.md > Ranked Outfit Results`, `prd.md > The Core Journey` (steps 1, 4, 5), `prd.md > Look and Feel`
@@ -30,12 +30,12 @@ Build mode: fast
   Commit: `Add event categories, tailored follow-up questions, and input guidance`
 
 - [ ] **3. Open an outfit to see why it works and shop every piece on Amazon**
-  Becomes usable: Cards are collapsed by default. Tapping one expands it in place (one at a time) to show the full "why" and an Amazon search link for every piece, using its color and your men's/women's answer. The link opens in a new tab. "Start over" returns to Start.
+  Becomes usable: Each piece is drawn as a clothing illustration tinted to its color. Cards are collapsed by default. Tapping one expands it in place (one at a time) to show the full "why" and an Amazon search link for every piece, using its color and your men's/women's answer. The link opens in a new tab. "Start over" returns to Start.
   Why now: This completes the core journey end to end, and it depends on slice 2's gender value.
   PRD ref: `prd.md > Outfit Detail and Shopping Links`, `prd.md > The Core Journey` (steps 6, 7)
   Spec ref: `spec.md > Amazon Link Builder`, `spec.md > OutfitList and OutfitCard`, `spec.md > Flow Controller`
-  Build: Write `lib/amazon.ts` (`buildAmazonSearchUrl`) with unit tests. Add expand/collapse state to OutfitList (`expandedIndex`) and the expanded content to OutfitCard (why + links with accessibility labels). Add a Start over action.
-  Verify (mechanical): `npm test` passes, including `amazon.test.ts` (encoding, color first, men's/women's suffix). `tsc` and `npm run build` pass. Open 3 generated links and confirm they land on relevant, correctly colored Amazon results (build-time check 2). Browser check of expand/collapse and Start over.
+  Build: Add `components/PieceIllustration.tsx` (inline SVGs per slot, plus a few accessory types picked from the piece name, filled with `colorHex`, outlined with an ink token) and use it in OutfitCard in place of the dot swatch. Write `lib/amazon.ts` (`buildAmazonSearchUrl`) with unit tests. Add expand/collapse state to OutfitList (`expandedIndex`) and the expanded content to OutfitCard (why + links with accessibility labels). Add a Start over action.
+  Verify (mechanical): The illustration chooses the right icon for each slot and accessory keyword (unit test). `npm test` passes, including `amazon.test.ts` (encoding, color first, men's/women's suffix). `tsc` and `npm run build` pass. Open 3 generated links and confirm they land on relevant, correctly colored Amazon results (build-time check 2). Browser check of expand/collapse and Start over.
   Learner check: Run the whole journey. Tap the top outfit to expand it, read the "why," click two piece links, and check that Amazon shows something close, especially in color. Then press Start over.
   Commit: `Expand outfits to show reasoning and Amazon search links`
 
@@ -51,7 +51,7 @@ Build mode: fast
 
 ## Hands-on Checkpoints
 
-- [ ] Early usable behavior explored — after slice 1 (outfit quality and look can still reshape prompts and styling)
+- [x] Early usable behavior explored — after slice 1 (outfit quality and look can still reshape prompts and styling)
 - [ ] Final kick-the-tires exploration and feedback completed
 
 ## Final Review
@@ -71,3 +71,8 @@ Reflection:
 Activity mode:
 
 ## Revisions
+
+- Outfit call measured at ~34s on Opus 5.5 (effort medium), slightly above the ~30s estimate; kept effort as planned and changed the loading copy to "about 30 seconds" — build-time check 1.
+- Server-side `fallbacks: "default"` works with `client.beta.messages.parse` + `betaZodOutputFormat` (beta namespace, not `messages.parse`) — build-time check 3.
+- Next.js scaffold is v16.4.2; Vitest config is `vitest.config.mts` (ESM) instead of `.ts` — the project isn't `type: module`.
+- Slice 1 checkpoint: the learner liked the outfits but wanted to see each item, not just a color dot. They agreed to color-tinted clothing illustrations (no new service), folded into slice 3; the fallback is the current swatches. Product photos and AI images stay out of the PoC. Updated `prd.md > Look and Feel`/`Ranked Outfit Results`/`What We're Building`/`Non-Goals` and `spec.md > OutfitList and OutfitCard`/`File Structure`.

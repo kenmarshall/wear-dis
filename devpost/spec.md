@@ -79,7 +79,7 @@ A centered animation in the accent color, with a short reassuring line ("Putting
 PRD ref: `prd.md > States and Boundaries` (loading).
 
 ### OutfitList and OutfitCard (`components/OutfitList.tsx`, `components/OutfitCard.tsx`)
-The list renders five cards in rank order, with only one expanded at a time. Collapsed, a card shows the rank badge ("Best pick" for #1), the outfit name, a one-line summary, and every piece with its color swatch and color name. Expanded, it adds the full "why it works" (occasion + colors) and an Amazon link per piece (opens in a new tab). "Start over" sits below the list.
+The list renders five cards in rank order, with only one expanded at a time. Collapsed, a card shows the rank badge ("Best pick" for #1), the outfit name, a one-line summary, and every piece as a `PieceIllustration` (a small inline SVG for its slot, or accessory type, filled with `colorHex`) with its color name. Expanded, it adds the full "why it works" (occasion + colors) and an Amazon link per piece (opens in a new tab). "Start over" sits below the list.
 PRD ref: `prd.md > Ranked Outfit Results`, `prd.md > Outfit Detail and Shopping Links`.
 
 ### ErrorMessage (`components/ErrorMessage.tsx`)
@@ -155,6 +155,7 @@ outfit-advisor/            # project root (this folder)
 │   ├── LoadingState.tsx (+ .module.css)
 │   ├── OutfitList.tsx (+ .module.css)
 │   ├── OutfitCard.tsx (+ .module.css)
+│   ├── PieceIllustration.tsx   # inline SVG clothing icons tinted to the piece color
 │   └── ErrorMessage.tsx (+ .module.css)
 ├── lib/
 │   ├── schemas.ts         # zod schemas + inferred types (shared by routes and page)
@@ -171,7 +172,7 @@ outfit-advisor/            # project root (this folder)
 ├── .gitignore             # already ignores .env*, devpost/learner-profile.md
 ├── package.json
 ├── tsconfig.json          # strict
-├── vitest.config.ts
+├── vitest.config.mts
 ├── README.md              # what it is, how to run, demo steps
 └── devpost/               # Devpost learning workspace (planning docs)
 ```

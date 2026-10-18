@@ -35,7 +35,7 @@ It's a single flow through four steps. Nothing persists between them except your
 - Light and minimal, with lots of white space.
 - Typography should "feel stylistic like going into a fashion store" and make you "feel like a fashion model." That suggests an elegant, editorial, high-fashion character, especially for headings.
 - References: Pinterest outfit boards. The tone is a reassuring, knowledgeable friend, not a catalog (`scope.md > Inspiration & Identity`).
-- Color swatches on the cards are the main splash of color. The surrounding UI stays quiet.
+- Each piece is shown as a simple clothing illustration (shirt, trousers, shoe…) filled with the piece's color, plus its color name. These illustrations are the main splash of color; the surrounding UI stays quiet. (Added at the slice 1 checkpoint: the learner wanted to see each item, not just a color dot.)
 
 ## Features and Behavior
 
@@ -61,7 +61,7 @@ Source: `scope.md > The Unique Kernel` (this is the kernel).
 - As the user, I want several complete outfits ranked from best to least, each explaining why it works, so that I can choose with confidence.
   - [ ] About five outfits appear, in a clearly ranked order (the best one is visibly first).
   - [ ] Each card shows every piece of the outfit: top, bottom, footwear, accessories (and outerwear when relevant).
-  - [ ] Each piece shows its color as a swatch.
+  - [ ] Each piece shows a clothing illustration for its type, filled with its color.
   - [ ] The outfits clearly reflect the event and the follow-up answers. A fine-dining date doesn't get gym clothes.
 
 ### Outfit Detail and Shopping Links
@@ -96,7 +96,7 @@ Source: `scope.md > The POC Boundary` ("light links").
 - A start step with a text box and tappable event categories.
 - Tailored follow-up questions with tap-to-choose options, including "about you" every time.
 - A loading animation.
-- About five ranked outfit cards, each showing every piece with color swatches.
+- About five ranked outfit cards, each showing every piece as a color-tinted clothing illustration.
 - Cards that expand in place to show the "why this works" explanation and an Amazon search link per piece.
 - Friendly states for unusable input and for failures, with guidance and a retry.
 
@@ -112,7 +112,7 @@ Source: `scope.md > The POC Boundary` ("light links").
 
 ## Non-Goals
 - **Exact Amazon products or the product API:** it needs an affiliate account with sales history (`scope.md > Explicitly Cut`).
-- **Outfit photos or AI images in the PoC:** swatch cards prove the kernel (`scope.md > Explicitly Cut`).
+- **Outfit photos, product photos, or AI images in the PoC:** tinted illustrations give the visual feel without another service (`scope.md > Explicitly Cut`). Real product photos are a possible later enhancement.
 - **Accounts or sign-in:** there's nothing to save.
 - **Wardrobe management:** for now it suggests new items only.
 
