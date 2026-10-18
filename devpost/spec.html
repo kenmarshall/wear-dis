@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Outfit Advisor — Spec</title>
+<style>
+  :root {
+    --bg: #f7f4ef; --surface: #ffffff; --ink: #1f1b16; --muted: #6b6259;
+    --line: #e4ddd3; --accent: #9a3b4c; --accent-soft: #f4e3e6;
+    --blue: #2f5a8a; --blue-soft: #e1eaf4; --green: #2f6b4f; --green-soft: #e2f0e8;
+    --amber: #8a6411; --amber-soft: #f6ecd4;
+    --radius: 14px; --gap: 1rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #17140f; --surface: #221e18; --ink: #f1ebe3; --muted: #a99e91;
+      --line: #3a332a; --accent: #e08a9a; --accent-soft: #3a2228;
+      --blue: #8db4e2; --blue-soft: #1c2a3a; --green: #7fcaa5; --green-soft: #1f3329;
+      --amber: #e3bd6a; --amber-soft: #352b16;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+    font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width: 920px; margin: 0 auto; padding: 2.5rem 1.25rem 4rem; }
+  .eyebrow { text-transform: uppercase; letter-spacing: .12em; font-size: .75rem; color: var(--muted); }
+  h1 { font-family: ui-serif, Georgia, serif; font-size: clamp(2rem, 5vw, 2.8rem); margin: .25rem 0 .5rem; }
+  h2 { font-family: ui-serif, Georgia, serif; font-size: 1.4rem; margin: 0 0 .6rem; }
+  h3 { margin: 0 0 .4rem; font-size: 1.02rem; }
+  .lede { font-size: 1.1rem; color: var(--muted); margin: 0 0 2rem; }
+  .status { display: inline-block; padding: .15rem .6rem; border-radius: 999px;
+    background: var(--amber-soft); color: var(--amber); font-size: .8rem; font-weight: 600; }
+  section { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 1.5rem; margin-bottom: var(--gap); }
+  .three { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: var(--gap); }
+  .piece { border-radius: 10px; padding: 1rem; }
+  .piece.page { background: var(--blue-soft); } .piece.route { background: var(--accent-soft); } .piece.link { background: var(--green-soft); }
+  .piece h3 { display: flex; align-items: center; gap: .5rem; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+  .diagram-wrap { overflow-x: auto; }
+  svg text { font-family: ui-sans-serif, system-ui, sans-serif; }
+  .zone { fill: none; stroke: var(--line); stroke-dasharray: 4 4; }
+  .zlabel { fill: var(--muted); font-size: 11px; letter-spacing: .08em; }
+  .box rect { stroke-width: 1.5; }
+  .box text { fill: var(--ink); font-size: 13px; }
+  .box .sub { fill: var(--muted); font-size: 11px; }
+  .b-page rect { fill: var(--blue-soft); stroke: var(--blue); }
+  .b-route rect { fill: var(--accent-soft); stroke: var(--accent); }
+  .b-link rect { fill: var(--green-soft); stroke: var(--green); }
+  .b-ext rect { fill: var(--surface); stroke: var(--muted); }
+  .edge { stroke: var(--muted); stroke-width: 1.5; fill: none; marker-end: url(#ah); }
+  .elabel { fill: var(--muted); font-size: 11px; }
+  #ah path { fill: var(--muted); }
+  .steps { display: flex; gap: .4rem; flex-wrap: wrap; margin: .5rem 0 1rem; }
+  .steps button, .navbtn { font: inherit; font-size: .88rem; padding: .45rem .8rem; min-height: 40px; border-radius: 999px;
+    border: 1px solid var(--line); background: var(--bg); color: var(--ink); cursor: pointer; }
+  .steps button[aria-selected="true"] { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .stepcard { border: 1px solid var(--line); border-radius: 10px; padding: 1rem 1.2rem; }
+  .stepcard p { margin: .2rem 0 .8rem; }
+  .meta { display: flex; flex-wrap: wrap; gap: .4rem; }
+  .chip { font-size: .78rem; padding: .15rem .55rem; border-radius: 999px; background: var(--bg); border: 1px solid var(--line); }
+  .chip.prd { background: var(--amber-soft); border-color: transparent; color: var(--amber); }
+  code, .chip.file { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .85em; }
+  details { border: 1px solid var(--line); border-radius: 10px; margin-bottom: .6rem; overflow: hidden; }
+  summary { cursor: pointer; padding: .8rem 1rem; font-weight: 600; list-style: none; display: flex; align-items: center; gap: .6rem; flex-wrap: wrap; }
+  summary::-webkit-details-marker { display: none; }
+  summary::after { content: "+"; margin-left: auto; color: var(--muted); font-weight: 400; }
+  details[open] summary::after { content: "–"; }
+  details .body { padding: 0 1rem 1rem; }
+  .muted { color: var(--muted); }
+  pre { background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 1rem; overflow-x: auto; font-size: .82rem; line-height: 1.5; margin: 0; }
+  table { border-collapse: collapse; width: 100%; font-size: .92rem; }
+  td, th { text-align: left; padding: .5rem .6rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--muted); font-weight: 600; font-size: .8rem; text-transform: uppercase; letter-spacing: .06em; }
+  .tablewrap { overflow-x: auto; }
+</style>
+</head>
+<body>
+<main>
+  <div class="eyebrow">Devpost Learn · Technical spec <span class="status">approved</span></div>
+  <h1>Outfit Advisor</h1>
+  <p class="lede">Next.js on your laptop · Claude Opus 5.5 for questions and outfits · Amazon search links built in code · nothing stored.</p>
+
+  <section>
+    <h2>Three pieces, in plain language</h2>
+    <div class="three">
+      <div class="piece page"><h3><span class="dot" style="background:var(--blue)"></span>The page</h3>One browser screen that moves through Start → Follow-ups → Loading → Results. It's React components with CSS, and it remembers answers only while the tab is open.</div>
+      <div class="piece route"><h3><span class="dot" style="background:var(--accent)"></span>Two API routes</h3>Small server files that hold your secret key and ask Claude for (1) follow-up questions and (2) five ranked outfits. Claude must answer in a fixed JSON shape, and our code checks it.</div>
+      <div class="piece link"><h3><span class="dot" style="background:var(--green)"></span>Link builder</h3>Our own function turns each piece into <code>amazon.com/s?k=navy+slim+fit+blazer+men</code>. The AI never makes links, so they're free, instant, and never broken.</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>How data moves</h2>
+    <div class="diagram-wrap">
+    <svg viewBox="0 0 860 300" width="100%" role="img" aria-label="Architecture: In your browser, the page sends the event to the questions route and the event plus answers to the outfits route. Both routes run on your laptop and call the Anthropic API with your key. The page uses the link builder to create Amazon search links, which open amazon.com.">
+      <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z"/></marker></defs>
+      <rect class="zone" x="8" y="20" width="270" height="270" rx="12"/><text class="zlabel" x="22" y="40">IN YOUR BROWSER</text>
+      <rect class="zone" x="318" y="20" width="250" height="270" rx="12"/><text class="zlabel" x="332" y="40">ON YOUR LAPTOP (SERVER)</text>
+      <text class="zlabel" x="620" y="40">INTERNET</text>
+      <g class="box b-page"><rect x="30" y="60" width="226" height="100" rx="10"/><text x="143" y="92" text-anchor="middle">Page · app/page.tsx</text><text class="sub" x="143" y="112" text-anchor="middle">step, event, answers,</text><text class="sub" x="143" y="128" text-anchor="middle">outfits (React state only)</text></g>
+      <g class="box b-link"><rect x="30" y="200" width="226" height="70" rx="10"/><text x="143" y="230" text-anchor="middle">lib/amazon.ts</text><text class="sub" x="143" y="248" text-anchor="middle">piece + gender → search URL</text></g>
+      <g class="box b-route"><rect x="340" y="60" width="206" height="70" rx="10"/><text x="443" y="90" text-anchor="middle">/api/questions</text><text class="sub" x="443" y="108" text-anchor="middle">effort: low</text></g>
+      <g class="box b-route"><rect x="340" y="180" width="206" height="70" rx="10"/><text x="443" y="210" text-anchor="middle">/api/outfits</text><text class="sub" x="443" y="228" text-anchor="middle">effort: medium</text></g>
+      <g class="box b-ext"><rect x="620" y="110" width="220" height="80" rx="10"/><text x="730" y="142" text-anchor="middle">Anthropic API</text><text class="sub" x="730" y="162" text-anchor="middle">claude-opus-5-5 · JSON schema</text></g>
+      <g class="box b-ext"><rect x="620" y="220" width="220" height="56" rx="10"/><text x="730" y="253" text-anchor="middle">amazon.com search</text></g>
+      <path class="edge" d="M256 95 H338"/><text class="elabel" x="262" y="88">{ event }</text>
+      <path class="edge" d="M256 135 C300 135, 300 210, 338 210"/><text class="elabel" x="262" y="175">event + answers</text>
+      <path class="edge" d="M546 95 C590 95, 590 140, 618 140"/>
+      <path class="edge" d="M546 215 C590 215, 590 160, 618 160"/><text class="elabel" x="560" y="198">key here</text>
+      <path class="edge" d="M143 160 V198"/>
+      <path class="edge" d="M256 248 H618"/><text class="elabel" x="380" y="270">click opens new tab</text>
+    </svg>
+    </div>
+  </section>
+
+  <section>
+    <h2>Walk the journey through the system</h2>
+    <p class="muted">Step through <code>prd.md › The Core Journey</code> and see which files do the work.</p>
+    <div class="steps" role="tablist" aria-label="Journey steps"></div>
+    <div class="stepcard" aria-live="polite"><h3 id="st-title"></h3><p id="st-body"></p><div class="meta" id="st-meta"></div></div>
+    <div style="display:flex;gap:.5rem;margin-top:.8rem">
+      <button class="navbtn" id="prev" aria-label="Previous step">← Prev</button>
+      <button class="navbtn" id="next" aria-label="Next step">Next →</button>
+    </div>
+    <noscript><ol><li>Open localhost:3000 → Start</li><li>Submit event → /api/questions</li><li>Claude returns questions or guidance</li><li>Follow-ups with fixed Men's/Women's first</li><li>Find my outfits → /api/outfits</li><li>Claude returns five ranked outfits</li><li>Cards expand; links via lib/amazon.ts</li><li>Click opens Amazon; Start over resets</li></ol></noscript>
+  </section>
+
+  <section>
+    <h2>Components</h2>
+    <p class="muted">Each component has its own heading in <code>spec.md › Components</code>.</p>
+    <div id="comps"></div>
+  </section>
+
+  <section>
+    <h2>Data shapes</h2>
+    <p class="muted">Defined once in <code>lib/schemas.ts</code> (zod). Claude must match them, and TypeScript types come from them.</p>
+<pre>QuestionsResponse { usable, guidance | null, exampleEvent | null, questions: Question[] }
+Question          { id, text, options: string[] }            // 2–5 options
+OutfitsResponse   { outfits: Outfit[] }                       // exactly 5
+Outfit            { rank, name, summary, whyOccasion, whyColors, pieces: Piece[] }
+Piece             { slot, name, colorName, colorHex, searchTerms }</pre>
+    <p style="margin-top:.8rem"><strong>Where data lives:</strong> React state in the page only. Close the tab and everything is gone, which matches the PRD (nothing is saved).</p>
+  </section>
+
+  <section>
+    <h2>Failure modes</h2>
+    <div class="tablewrap"><table>
+      <tr><th>What breaks</th><th>What you see</th></tr>
+      <tr><td>Outfit call is slow (15–30s+)</td><td>Loading animation with reassuring copy</td></tr>
+      <tr><td>Claude fails, refuses, or returns a bad shape</td><td>Friendly message + "Try again" (answers are kept)</td></tr>
+      <tr><td>"asdf" / "my cat"</td><td>Stays on Start with guidance + an example event (not an error)</td></tr>
+      <tr><td>Missing API key</td><td>Same friendly failure; the server log names the missing env var</td></tr>
+    </table></div>
+  </section>
+
+  <section>
+    <h2>Decisions</h2>
+    <details open><summary><span class="chip prd">yours</span> Learner decisions</summary><div class="body"><ul>
+      <li><strong>Next.js</strong> over Expo web: familiar React plus a built-in server for the key (accepted a small learning curve)</li>
+      <li><strong>Claude Opus 5.5:</strong> best taste for the kernel (accepted ~7¢ per session and a slower outfit step)</li>
+      <li><strong>Local only:</strong> "since it cost, maybe just locally for now"</li>
+    </ul></div></details>
+    <details><summary><span class="chip">derived</span> My implementation details, change any you like</summary><div class="body"><ul>
+      <li>Two routes (questions, then outfits) with structured outputs via zod</li>
+      <li>Effort <code>low</code> for questions, <code>medium</code> for outfits</li>
+      <li>Server-side refusal fallback enabled (to verify with <code>messages.parse</code>)</li>
+      <li>Fixed Men's/Women's question in code, so links are always right</li>
+      <li>CSS Modules + <code>tokens.css</code>; Bodoni Moda + Inter</li>
+      <li>Categories: Date night, Concert, Wedding guest, Work event, Party, Casual outing</li>
+      <li>Vitest for the link builder and schemas</li>
+    </ul></div></details>
+    <details><summary><span class="chip">check early</span> Build-time checks</summary><div class="body"><ol>
+      <li>Real Opus 5.5 time for the outfit call. If it's far past 30s, we discuss effort before changing the model</li>
+      <li>Do the Amazon search links land on relevant, correctly colored results?</li>
+      <li>Current Next.js version; <code>fallbacks</code> with <code>messages.parse</code></li>
+    </ol>
+    <p class="muted">Learner uncertainty: none identified ("I think I understand everything"). Project name is still open and doesn't block the build.</p></div></details>
+  </section>
+
+  <section>
+    <h2>Run it</h2>
+<pre>npm install
+# put ANTHROPIC_API_KEY=... in .env.local  (gitignored; never paste it in chat)
+npm run dev
+# open http://localhost:3000</pre>
+    <p class="muted" style="margin-top:.8rem">Demo recording: fine-dining date → Men's/Women's + follow-ups → loading → five ranked cards → expand #1 → click a link.</p>
+  </section>
+
+  <p class="muted" style="font-size:.85rem">Companion to <code>devpost/spec.md</code>. The Markdown file is canonical.</p>
+</main>
+<script>
+  const journey = [
+    ["Open localhost:3000", "The page renders the Start step: a text box plus category chips from the static list.", ["app/page.tsx", "components/EventInput.tsx", "lib/categories.ts"], "Event Input"],
+    ["Submit the event", "Typing and submitting, or tapping a chip, sends { event } to the questions route. The in-flight guard blocks double taps.", ["lib/api.ts", "app/api/questions/route.ts"], "Event Input"],
+    ["Claude writes questions", "The route calls getQuestions() → Claude (effort low) → validated QuestionsResponse. If usable is false, Start shows the guidance and an example.", ["lib/claude.ts", "lib/prompts.ts", "lib/schemas.ts"], "Follow-Up Questions"],
+    ["Answer follow-ups", "The fixed Men's/Women's question comes first, then Claude's 2–4 questions as option chips. The button is disabled until all are answered.", ["components/FollowUpQuestions.tsx"], "Follow-Up Questions"],
+    ["Find my outfits", "The Loading step shows while { event, gender, answers } goes to the outfits route.", ["components/LoadingState.tsx", "app/api/outfits/route.ts"], "States and Boundaries"],
+    ["Claude ranks five outfits", "getOutfits() → Claude (effort medium) → validated OutfitsResponse, sorted by rank on the server.", ["lib/claude.ts", "lib/schemas.ts"], "Ranked Outfit Results"],
+    ["Cards and links", "Five cards, best first, with swatches. Expanding one shows the why (occasion + colors) and a link per piece from buildAmazonSearchUrl.", ["components/OutfitList.tsx", "components/OutfitCard.tsx", "lib/amazon.ts"], "Outfit Detail and Shopping Links"],
+    ["Shop or start over", "A link opens Amazon search in a new tab. Start over clears React state and returns to Start.", ["app/page.tsx"], "The Core Journey"]
+  ];
+  const comps = [
+    ["Flow Controller", "app/page.tsx", "Owns the step and all session data, calls the routes, and guards against double requests.", "The Core Journey"],
+    ["EventInput", "components/EventInput.tsx", "Text box, submit (disabled when empty or in flight), and category chips. Shows unusable-input guidance inline.", "Event Input"],
+    ["FollowUpQuestions", "components/FollowUpQuestions.tsx", "Fixed Men's/Women's first, then Claude's questions as chips. Find button disabled until all are answered. Back link to Start.", "Follow-Up Questions"],
+    ["LoadingState", "components/LoadingState.tsx", "Centered accent-color animation plus reassuring line.", "States and Boundaries"],
+    ["OutfitList + OutfitCard", "components/OutfitList.tsx · OutfitCard.tsx", "Five ranked cards, one expanded at a time. Collapsed: rank, name, summary, pieces with swatches. Expanded: the why plus links.", "Ranked Outfit Results"],
+    ["ErrorMessage", "components/ErrorMessage.tsx", "Friendly failure message plus Try again, which repeats the last request.", "States and Boundaries"],
+    ["Questions Route", "app/api/questions/route.ts", "POST { event } (1–300 chars) → QuestionsResponse, or 500 { error }.", "Follow-Up Questions"],
+    ["Outfits Route", "app/api/outfits/route.ts", "POST { event, gender, answers } → OutfitsResponse sorted by rank, or 500 { error }.", "Ranked Outfit Results"],
+    ["Claude Client + Prompts", "lib/claude.ts · lib/prompts.ts", "Server-only. messages.parse with claude-opus-5-5, zodOutputFormat, effort per call, refusal + null checks, server-side fallback.", "Ranked Outfit Results"],
+    ["Amazon Link Builder", "lib/amazon.ts", "Pure function: amazon.com/s?k= + \"{color} {searchTerms} {men's|women's}\". Unit-tested.", "Outfit Detail and Shopping Links"]
+  ];
+  const stepsEl = document.querySelector(".steps");
+  let cur = 0;
+  journey.forEach((j, i) => {
+    const b = document.createElement("button");
+    b.setAttribute("role", "tab"); b.textContent = (i + 1) + " · " + j[0];
+    b.addEventListener("click", () => show(i)); stepsEl.appendChild(b);
+  });
+  function show(i) {
+    cur = Math.max(0, Math.min(journey.length - 1, i));
+    const j = journey[cur];
+    stepsEl.querySelectorAll("button").forEach((b, k) => b.setAttribute("aria-selected", String(k === cur)));
+    document.getElementById("st-title").textContent = (cur + 1) + ". " + j[0];
+    document.getElementById("st-body").textContent = j[1];
+    document.getElementById("st-meta").innerHTML =
+      j[2].map(f => '<span class="chip file">' + f + '</span>').join("") +
+      '<span class="chip prd">prd › ' + j[3] + '</span>';
+  }
+  document.getElementById("prev").addEventListener("click", () => show(cur - 1));
+  document.getElementById("next").addEventListener("click", () => show(cur + 1));
+  show(0);
+  document.getElementById("comps").innerHTML = comps.map(c =>
+    '<details><summary>' + c[0] + ' <span class="chip file">' + c[1] + '</span></summary><div class="body"><p>' + c[2] +
+    '</p><span class="chip prd">prd › ' + c[3] + '</span></div></details>').join("");
+</script>
+</body>
+</html>

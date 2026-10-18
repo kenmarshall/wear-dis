@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Outfit Advisor — PRD</title>
+<style>
+  :root {
+    --bg: #f7f4ef; --surface: #ffffff; --ink: #1f1b16; --muted: #6b6259;
+    --line: #e4ddd3; --accent: #9a3b4c; --accent-soft: #f4e3e6;
+    --now: #2f6b4f; --now-soft: #e2f0e8; --later: #8a6411; --later-soft: #f6ecd4;
+    --cut: #8b3a2e; --cut-soft: #f5e1dd;
+    --radius: 14px; --gap: 1rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #17140f; --surface: #221e18; --ink: #f1ebe3; --muted: #a99e91;
+      --line: #3a332a; --accent: #e08a9a; --accent-soft: #3a2228;
+      --now: #7fcaa5; --now-soft: #1f3329; --later: #e3bd6a; --later-soft: #352b16;
+      --cut: #e59484; --cut-soft: #3a221d;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+    font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width: 900px; margin: 0 auto; padding: 2.5rem 1.25rem 4rem; }
+  .eyebrow { text-transform: uppercase; letter-spacing: .12em; font-size: .75rem; color: var(--muted); }
+  h1 { font-family: ui-serif, Georgia, serif; font-size: clamp(2rem, 5vw, 2.8rem); margin: .25rem 0 .5rem; }
+  h2 { font-family: ui-serif, Georgia, serif; font-size: 1.4rem; margin: 0 0 .6rem; }
+  h3 { margin: 0 0 .4rem; font-size: 1.05rem; }
+  .lede { font-size: 1.1rem; color: var(--muted); margin: 0 0 2rem; }
+  .status { display: inline-block; padding: .15rem .6rem; border-radius: 999px;
+    background: var(--later-soft); color: var(--later); font-size: .8rem; font-weight: 600; }
+  section { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 1.5rem; margin-bottom: var(--gap); }
+  .grew { display: grid; grid-template-columns: 1fr auto 1fr; gap: .8rem; align-items: center; }
+  .grew .was { color: var(--muted); font-style: italic; }
+  .grew .arrow { color: var(--accent); font-size: 1.4rem; }
+  .grew-row { padding: .6rem 0; border-bottom: 1px solid var(--line); }
+  .grew-row:last-child { border-bottom: 0; }
+  @media (max-width: 600px) { .grew { grid-template-columns: 1fr; } .grew .arrow { transform: rotate(90deg); justify-self: start; } }
+  .diagram-wrap { overflow-x: auto; }
+  svg text { font-family: ui-sans-serif, system-ui, sans-serif; }
+  .node rect { fill: var(--surface); stroke: var(--line); stroke-width: 1.5; cursor: pointer; }
+  .node.active rect { fill: var(--accent-soft); stroke: var(--accent); }
+  .node text { fill: var(--ink); font-size: 13px; pointer-events: none; }
+  .node .sub { fill: var(--muted); font-size: 11px; }
+  .edge { stroke: var(--muted); stroke-width: 1.5; fill: none; marker-end: url(#ah); }
+  .edge.err { stroke: var(--cut); stroke-dasharray: 5 4; marker-end: url(#ahe); }
+  #ah path { fill: var(--muted); } #ahe path { fill: var(--cut); }
+  .steps { display: flex; gap: .5rem; flex-wrap: wrap; margin: 1rem 0; }
+  .steps button { font: inherit; font-size: .9rem; padding: .5rem .9rem; min-height: 40px; border-radius: 999px;
+    border: 1px solid var(--line); background: var(--bg); color: var(--ink); cursor: pointer; }
+  .steps button[aria-selected="true"] { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .panel-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: var(--gap); }
+  .box { border: 1px solid var(--line); border-radius: 10px; padding: 1rem; }
+  .box.state { background: var(--cut-soft); border-color: transparent; }
+  .box ul { margin: 0; padding-left: 1.1rem; }
+  .crit { list-style: none; padding-left: 0 !important; }
+  .crit li::before { content: "☐ "; color: var(--now); }
+  details { border: 1px solid var(--line); border-radius: 10px; margin-bottom: .6rem; overflow: hidden; }
+  summary { cursor: pointer; padding: .8rem 1rem; font-weight: 600; list-style: none; display: flex; align-items: center; gap: .6rem; }
+  summary::-webkit-details-marker { display: none; }
+  summary::after { content: "+"; margin-left: auto; color: var(--muted); font-weight: 400; }
+  details[open] summary::after { content: "–"; }
+  .tag { font-size: .75rem; padding: .1rem .5rem; border-radius: 999px; font-weight: 700; }
+  .now .tag { background: var(--now-soft); color: var(--now); }
+  .later .tag { background: var(--later-soft); color: var(--later); }
+  .cut .tag { background: var(--cut-soft); color: var(--cut); }
+  .assume .tag { background: var(--accent-soft); color: var(--accent); }
+  details ul { margin: 0; padding: 0 1rem 1rem 2.2rem; }
+  details li { margin-bottom: .4rem; }
+  .muted { color: var(--muted); }
+  .feel { display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; }
+  .feel .sample { font-family: "Didot", "Bodoni 72", "Playfair Display", ui-serif, Georgia, serif; font-size: 2rem; letter-spacing: .02em; }
+  .sw { width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--line); display: inline-block; }
+</style>
+</head>
+<body>
+<main>
+  <div class="eyebrow">Devpost Learn · PRD <span class="status">approved</span></div>
+  <h1>Outfit Advisor</h1>
+  <p class="lede">Describe an event, answer a few tailored questions, get about five ranked outfits that explain why they work, with Amazon links for every piece. <span class="muted">(working name)</span></p>
+
+  <section>
+    <h2>How the scope grew</h2>
+    <div class="grew-row grew"><div class="was">Scope: "describe an event in plain words"</div><div class="arrow">→</div><div>A text box <strong>and</strong> tappable event categories, so it's easy to start either way</div></div>
+    <div class="grew-row grew"><div class="was">Scope: "a few short follow-up questions"</div><div class="arrow">→</div><div>The advisor picks event-specific questions with tap-to-choose answers, plus "about you" every time</div></div>
+    <div class="grew-row grew"><div class="was">Scope: "five ranked outfit cards"</div><div class="arrow">→</div><div>Every piece visible on one card; click to expand in place for the "why" and the links</div></div>
+    <div class="grew-row grew"><div class="was">Scope: (no states defined)</div><div class="arrow">→</div><div>A loading animation, plus friendly try-again guidance for bad input and for failures</div></div>
+  </section>
+
+  <section>
+    <h2>The journey</h2>
+    <p class="muted">Click a step in the diagram or the buttons to see its behavior, edge states, and how we'll know it works.</p>
+    <div class="diagram-wrap">
+    <svg viewBox="0 0 840 210" width="100%" role="img" aria-label="Journey: Start, then Follow-ups, then Loading, then Results. Errors from Loading return to Start with guidance.">
+      <defs>
+        <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z"/></marker>
+        <marker id="ahe" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z"/></marker>
+      </defs>
+      <g class="node" data-i="0"><rect x="10" y="30" width="170" height="80" rx="12"/><text x="95" y="64" text-anchor="middle">1 · Start</text><text class="sub" x="95" y="84" text-anchor="middle">text box + categories</text></g>
+      <g class="node" data-i="1"><rect x="225" y="30" width="170" height="80" rx="12"/><text x="310" y="64" text-anchor="middle">2 · Follow-ups</text><text class="sub" x="310" y="84" text-anchor="middle">about you + event Qs</text></g>
+      <g class="node" data-i="2"><rect x="440" y="30" width="150" height="80" rx="12"/><text x="515" y="64" text-anchor="middle">3 · Loading</text><text class="sub" x="515" y="84" text-anchor="middle">animation</text></g>
+      <g class="node" data-i="3"><rect x="635" y="30" width="195" height="80" rx="12"/><text x="732" y="64" text-anchor="middle">4 · Results</text><text class="sub" x="732" y="84" text-anchor="middle">~5 ranked · expand → links</text></g>
+      <path class="edge" d="M180 70 H223"/>
+      <path class="edge" d="M395 70 H438"/>
+      <path class="edge" d="M590 70 H633"/>
+      <path class="edge err" d="M515 112 C515 185, 95 185, 95 114"/>
+      <text x="305" y="178" text-anchor="middle" style="fill: var(--cut); font-size:12px">unusable input or failure → friendly try-again guidance</text>
+    </svg>
+    </div>
+    <div class="steps" role="tablist" aria-label="Journey steps">
+      <button role="tab" data-i="0">1 · Start</button>
+      <button role="tab" data-i="1">2 · Follow-ups</button>
+      <button role="tab" data-i="2">3 · Loading</button>
+      <button role="tab" data-i="3">4 · Results</button>
+    </div>
+    <div id="panel" class="panel-grid" aria-live="polite"></div>
+    <noscript><p>Start (text box + categories) → Follow-ups (about you + event questions, tap to choose) → Loading → Results (about five ranked cards; expand for the "why" and Amazon links). See prd.md for full criteria.</p></noscript>
+  </section>
+
+  <section>
+    <h2>Look and feel</h2>
+    <div class="feel">
+      <span class="sample">Date Night</span>
+      <span class="sw" style="background:#1f2a44" title="navy"></span>
+      <span class="sw" style="background:#e9e2d6" title="ivory"></span>
+      <span class="sw" style="background:#6b2d3a" title="burgundy"></span>
+    </div>
+    <p>Light and minimal, with lots of white space. Typography that "feels stylistic like going into a fashion store," something that makes you "feel like a fashion model." The swatches are the main color; the rest of the UI stays quiet. <span class="muted">(The type and swatches above are an illustration, not final picks.)</span></p>
+  </section>
+
+  <section>
+    <h2>Building now vs. later</h2>
+    <details class="now" open>
+      <summary><span class="tag">NOW</span> What we're building</summary>
+      <ul>
+        <li>A start step with a text box and tappable event categories</li>
+        <li>Tailored follow-ups with tap-to-choose options, including "about you" every time</li>
+        <li>A loading animation</li>
+        <li>About five ranked outfit cards, each showing every piece with color swatches</li>
+        <li>Expand in place to show the "why this works" and an Amazon search link per piece</li>
+        <li>Friendly states for unusable input and failures, with guidance and a retry</li>
+      </ul>
+    </details>
+    <details class="later">
+      <summary><span class="tag">DEFERRED</span> Implied, but not now</summary>
+      <ul>
+        <li><strong>Saving "about you":</strong> needs memory between visits plus a way to view and edit it, and doesn't prove the kernel</li>
+        <li><strong>Prices and an outfit total:</strong> needs real product data, which the scope cut</li>
+        <li>Later: outfit images or you in the outfit, using your own wardrobe, style options as a choice</li>
+      </ul>
+    </details>
+    <details class="cut">
+      <summary><span class="tag">NON-GOALS</span> Won't do</summary>
+      <ul>
+        <li>Exact products through Amazon's API</li>
+        <li>Photos or AI images in the PoC</li>
+        <li>Accounts or sign-in</li>
+        <li>Wardrobe management</li>
+      </ul>
+    </details>
+    <details class="assume">
+      <summary><span class="tag">ASSUMED</span> Not your decisions yet, open to change</summary>
+      <ul>
+        <li>About six event categories (date night, concert, wedding guest, work event, party, casual outing)</li>
+        <li>Follow-ups appear together on one step, around three to five questions</li>
+        <li>A "start over" action on results</li>
+        <li>Open question: the project name (doesn't block the spec)</li>
+      </ul>
+    </details>
+  </section>
+
+  <p class="muted" style="font-size:.85rem">Companion to <code>devpost/prd.md</code>. The Markdown file is canonical.</p>
+</main>
+<script>
+  const data = [
+    { t: "Start", does: ["A text box asks about your event", "Event categories sit underneath", "Type and submit, or tap a category"],
+      state: ["Unusable input (\"asdf\", \"my cat\"): a friendly message plus an example of a better description; you stay here"],
+      crit: ["Text box and categories are both visible on the first screen", "Typing and submitting, or tapping a category, moves on to follow-ups", "\"Fancy dinner date\" and \"romantic fine-dining date\" are both understood"] },
+    { t: "Follow-ups", does: ["\"About you\" questions every time (at least men's or women's clothing)", "The advisor picks questions for this event type", "Every answer is tap-to-choose"],
+      state: ["Nothing saved: next visit asks again"],
+      crit: ["A concert gets different questions than a fine-dining date", "Only a few taps, not a long form", "Every question offers options"] },
+    { t: "Loading", does: ["A loading animation while outfits are assembled"],
+      state: ["Failure: a friendly message plus a try-again action"],
+      crit: ["The animation shows until results or an error appears", "A failure never leaves a blank or broken screen"] },
+    { t: "Results", does: ["About five outfit cards, best first", "Every piece on one card, each with a color swatch", "Click to expand in place: the full \"why\" and an Amazon link per piece"],
+      state: ["No prices shown, by design"],
+      crit: ["Ranked order is visible (the best one is clearly first)", "The outfits match the event and answers (no gym clothes for fine dining)", "The \"why\" covers the occasion and the colors", "Each link opens Amazon search results with the right description, color, and men's or women's"] }
+  ];
+  const panel = document.getElementById("panel");
+  const btns = document.querySelectorAll(".steps button");
+  const nodes = document.querySelectorAll(".node");
+  const li = a => a.map(x => "<li>" + x + "</li>").join("");
+  function show(i) {
+    i = Number(i);
+    btns.forEach(b => b.setAttribute("aria-selected", String(Number(b.dataset.i) === i)));
+    nodes.forEach(n => n.classList.toggle("active", Number(n.dataset.i) === i));
+    const d = data[i];
+    panel.innerHTML =
+      '<div class="box"><h3>What happens</h3><ul>' + li(d.does) + '</ul></div>' +
+      '<div class="box state"><h3>Edge states</h3><ul>' + li(d.state) + '</ul></div>' +
+      '<div class="box"><h3>How we\'ll know it works</h3><ul class="crit">' + li(d.crit) + '</ul></div>';
+  }
+  btns.forEach(b => b.addEventListener("click", () => show(b.dataset.i)));
+  nodes.forEach(n => n.addEventListener("click", () => show(n.dataset.i)));
+  show(0);
+</script>
+</body>
+</html>

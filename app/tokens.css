@@ -1,0 +1,57 @@
+/* Design tokens: the only place raw colors, sizes, and radii are defined. */
+:root {
+  /* Palette — light, quiet, fashion-store calm. Outfit swatches supply the color. */
+  --color-bg: #faf8f5;
+  --color-surface: #ffffff;
+  --color-ink: #1a1714;
+  --color-muted: #6b635b;
+  --color-line: #e7e1d9;
+  --color-accent: #6b2737;
+  --color-accent-hover: #561e2c;
+  --color-accent-ink: #ffffff;
+  --color-accent-soft: #f4e8eb;
+  --color-error: #8a2a1f;
+  --color-error-soft: #f8e9e6;
+  --color-swatch-fallback: #d9d3cb;
+  --color-swatch-ring: rgba(26, 23, 20, 0.15);
+
+  /* Typography — set by next/font in layout.tsx */
+  --font-display: var(--font-bodoni), "Didot", "Bodoni 72", Georgia, serif;
+  --font-body: var(--font-inter), ui-sans-serif, system-ui, -apple-system, sans-serif;
+
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-md: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.5rem;
+  --text-2xl: 2.25rem;
+  --text-3xl: clamp(2.25rem, 6vw, 3.25rem);
+
+  --tracking-wide: 0.14em;
+  --leading-tight: 1.15;
+  --leading-body: 1.6;
+
+  /* Spacing */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4.5rem;
+
+  /* Shape & size */
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-pill: 999px;
+  --touch-target: 44px;
+  --swatch-size: 22px;
+  --content-width: 640px;
+  --border-width: 1px;
+  --focus-ring: 0 0 0 3px var(--color-accent-soft), 0 0 0 4px var(--color-accent);
+
+  /* Motion */
+  --duration-fast: 150ms;
+  --duration-pulse: 1.4s;
+}

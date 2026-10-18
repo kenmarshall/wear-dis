@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Outfit Advisor — Scope</title>
+<style>
+  :root {
+    --bg: #f7f4ef; --surface: #ffffff; --ink: #1f1b16; --muted: #6b6259;
+    --line: #e4ddd3; --accent: #9a3b4c; --accent-soft: #f4e3e6;
+    --now: #2f6b4f; --now-soft: #e2f0e8; --later: #8a6411; --later-soft: #f6ecd4;
+    --cut: #8b3a2e; --cut-soft: #f5e1dd;
+    --radius: 14px; --gap: 1rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #17140f; --surface: #221e18; --ink: #f1ebe3; --muted: #a99e91;
+      --line: #3a332a; --accent: #e08a9a; --accent-soft: #3a2228;
+      --now: #7fcaa5; --now-soft: #1f3329; --later: #e3bd6a; --later-soft: #352b16;
+      --cut: #e59484; --cut-soft: #3a221d;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+    font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width: 860px; margin: 0 auto; padding: 2.5rem 1.25rem 4rem; }
+  .eyebrow { text-transform: uppercase; letter-spacing: .12em; font-size: .75rem; color: var(--muted); }
+  h1 { font-family: ui-serif, Georgia, serif; font-size: clamp(2rem, 5vw, 2.8rem); margin: .25rem 0 .5rem; }
+  h2 { font-family: ui-serif, Georgia, serif; font-size: 1.4rem; margin: 0 0 .6rem; }
+  .lede { font-size: 1.1rem; color: var(--muted); margin: 0 0 2rem; }
+  .status { display: inline-block; padding: .15rem .6rem; border-radius: 999px;
+    background: var(--later-soft); color: var(--later); font-size: .8rem; font-weight: 600; }
+  section { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 1.5rem; margin-bottom: var(--gap); }
+  .kernel { background: var(--accent-soft); border-color: transparent; }
+  .kernel p.big { font-family: ui-serif, Georgia, serif; font-size: 1.3rem; margin: 0 0 .6rem; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: var(--gap); }
+  .grid section { margin: 0; }
+  blockquote { margin: .5rem 0; padding-left: 1rem; border-left: 3px solid var(--accent); color: var(--muted); font-style: italic; }
+  .diagram-wrap { overflow-x: auto; }
+  svg text { font-family: ui-sans-serif, system-ui, sans-serif; }
+  .node rect { fill: var(--surface); stroke: var(--line); stroke-width: 1.5; }
+  .node.hero rect { fill: var(--accent-soft); stroke: var(--accent); }
+  .node text { fill: var(--ink); font-size: 13px; }
+  .node .sub { fill: var(--muted); font-size: 11px; }
+  .arrow { stroke: var(--muted); stroke-width: 1.5; fill: none; marker-end: url(#ah); }
+  .loop { stroke: var(--accent); stroke-dasharray: 5 4; }
+  #ah path { fill: var(--muted); }
+  .steps { display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: 1rem; }
+  .steps button { font: inherit; font-size: .9rem; padding: .5rem .9rem; min-height: 40px; border-radius: 999px;
+    border: 1px solid var(--line); background: var(--bg); color: var(--ink); cursor: pointer; }
+  .steps button[aria-selected="true"] { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .demo-panel { min-height: 5.5rem; }
+  .demo-panel h3 { margin: 0 0 .3rem; font-size: 1rem; }
+  .demo-panel p { margin: 0; color: var(--muted); }
+  details { border: 1px solid var(--line); border-radius: 10px; margin-bottom: .6rem; overflow: hidden; }
+  summary { cursor: pointer; padding: .8rem 1rem; font-weight: 600; list-style: none; display: flex; align-items: center; gap: .6rem; }
+  summary::-webkit-details-marker { display: none; }
+  summary::after { content: "+"; margin-left: auto; color: var(--muted); font-weight: 400; }
+  details[open] summary::after { content: "–"; }
+  .tag { font-size: .75rem; padding: .1rem .5rem; border-radius: 999px; font-weight: 700; }
+  .now .tag { background: var(--now-soft); color: var(--now); }
+  .later .tag { background: var(--later-soft); color: var(--later); }
+  .cut .tag { background: var(--cut-soft); color: var(--cut); }
+  details ul { margin: 0; padding: 0 1rem 1rem 2.2rem; }
+  details li { margin-bottom: .4rem; }
+  .muted { color: var(--muted); }
+  a { color: var(--accent); }
+</style>
+</head>
+<body>
+<main>
+  <div class="eyebrow">Devpost Learn · Scope <span class="status">approved</span></div>
+  <h1>Outfit Advisor</h1>
+  <p class="lede">Tell it about an event. It recommends ranked, complete outfits, explains why each one works, and links every piece to Amazon. <span class="muted">(working name)</span></p>
+
+  <section class="kernel">
+    <div class="eyebrow">The unique kernel</div>
+    <p class="big">It gives you the <strong>confidence to pick</strong> by explaining <em>why</em> each outfit fits, ranked best first.</p>
+    <p>Pinterest shows good-looking outfits but assumes you already know which one fits and why. This advisor makes the style call for you.</p>
+  </section>
+
+  <section>
+    <h2>The core loop</h2>
+    <div class="diagram-wrap">
+    <svg viewBox="0 0 820 230" width="100%" role="img" aria-label="Core loop: You describe an event, answer follow-up questions, see five ranked outfits with explanations, pick one, then get Amazon search links. The next event starts the loop again.">
+      <defs>
+        <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z"/></marker>
+      </defs>
+      <g class="node"><rect x="10" y="40" width="140" height="74" rx="12"/><text x="80" y="72" text-anchor="middle">Describe event</text><text class="sub" x="80" y="92" text-anchor="middle">"romantic fine-dining date"</text></g>
+      <g class="node"><rect x="175" y="40" width="140" height="74" rx="12"/><text x="245" y="72" text-anchor="middle">Follow-up Qs</text><text class="sub" x="245" y="92" text-anchor="middle">a few, short</text></g>
+      <g class="node hero"><rect x="340" y="30" width="160" height="94" rx="12"/><text x="420" y="64" text-anchor="middle">~5 ranked outfits</text><text class="sub" x="420" y="84" text-anchor="middle">swatch cards</text><text class="sub" x="420" y="102" text-anchor="middle">+ "why this works"</text></g>
+      <g class="node"><rect x="525" y="40" width="120" height="74" rx="12"/><text x="585" y="72" text-anchor="middle">Pick one</text><text class="sub" x="585" y="92" text-anchor="middle">top or any</text></g>
+      <g class="node"><rect x="670" y="40" width="140" height="74" rx="12"/><text x="740" y="72" text-anchor="middle">Amazon links</text><text class="sub" x="740" y="92" text-anchor="middle">per piece, color first</text></g>
+      <path class="arrow" d="M150 77 H173"/>
+      <path class="arrow" d="M315 77 H338"/>
+      <path class="arrow" d="M500 77 H523"/>
+      <path class="arrow" d="M645 77 H668"/>
+      <path class="arrow loop" d="M740 116 C740 200, 80 200, 80 118"/>
+      <text x="410" y="196" text-anchor="middle" fill="currentColor" style="fill: var(--muted); font-size:12px">next event you don't know how to dress for</text>
+    </svg>
+    </div>
+  </section>
+
+  <div class="grid">
+    <section>
+      <h2>Who it's for</h2>
+      <p>You, first. Someone who doesn't know styles or which colors go together and wants an advisor to decide, not a gallery to sort through.</p>
+      <blockquote>"Sometimes I can't decide what to wear."</blockquote>
+    </section>
+    <section>
+      <h2>Feel</h2>
+      <p>Like <a href="https://www.pinterest.com">Pinterest outfit boards</a>: visual, put-together, browsable. The tone of a knowledgeable friend who reassures you, not a catalog.</p>
+    </section>
+  </div>
+  <div style="height:var(--gap)"></div>
+
+  <section>
+    <h2>What "working" looks like</h2>
+    <p class="muted">The one-minute demo, step by step:</p>
+    <div class="steps" role="tablist" aria-label="Demo steps">
+      <button role="tab" aria-selected="true" data-i="0">1 · Describe</button>
+      <button role="tab" aria-selected="false" data-i="1">2 · Clarify</button>
+      <button role="tab" aria-selected="false" data-i="2">3 · Ranked outfits</button>
+      <button role="tab" aria-selected="false" data-i="3">4 · Shop</button>
+    </div>
+    <div class="demo-panel" role="tabpanel" aria-live="polite"></div>
+    <noscript><p>1. Type the event. 2. Answer a couple of follow-ups. 3. See five ranked outfit cards with explanations. 4. Click one and get Amazon links for every piece.</p></noscript>
+  </section>
+
+  <section>
+    <h2>The boundary</h2>
+    <details class="now" open>
+      <summary><span class="tag">NOW</span> In the proof of concept</summary>
+      <ul>
+        <li>Free-text event description, followed by a few clarifying questions</li>
+        <li>About five complete outfits (top, bottom, footwear, accessories), ranked, each with "why it works"</li>
+        <li><strong>Light visuals:</strong> outfit cards that list the pieces with color swatches, not photos</li>
+        <li><strong>Light links:</strong> an Amazon <em>search</em> link per piece, built from its description and color</li>
+        <li>New items only</li>
+      </ul>
+    </details>
+    <details class="later">
+      <summary><span class="tag">LATER</span> Worth doing, just not now</summary>
+      <ul>
+        <li>Generated images of a person wearing each outfit, perhaps only for the selected one</li>
+        <li>Seeing <em>yourself</em> in the outfits</li>
+        <li>Using clothes you already own, mixed with new items or with other owned pieces</li>
+        <li>Style options as a choice, in addition to the recommended style</li>
+      </ul>
+    </details>
+    <details class="cut">
+      <summary><span class="tag">CUT</span> Named, with reasons</summary>
+      <ul>
+        <li><strong>Exact products through Amazon's API:</strong> it needs an approved affiliate account with sales history. Search links cover the need.</li>
+        <li><strong>AI outfit images in the PoC:</strong> slow, cost per image, and wouldn't match the linked products. Swatch cards prove the kernel.</li>
+      </ul>
+    </details>
+  </section>
+
+  <p class="muted" style="font-size:.85rem">Companion to <code>devpost/scope.md</code>. The Markdown file is canonical.</p>
+</main>
+<script>
+  const steps = [
+    ["Describe the event", "Type: “I'm going on a romantic date to a fine-dining restaurant.”"],
+    ["Answer a couple of questions", "It asks a few short follow-ups to understand the occasion."],
+    ["See five ranked outfits", "Swatch cards ordered best first, each explaining why it suits the occasion and why the colors work. This is the “oh, that's cool” beat."],
+    ["Click one and shop", "Every piece gets an Amazon search link in a matching color."]
+  ];
+  const panel = document.querySelector(".demo-panel");
+  const btns = document.querySelectorAll(".steps button");
+  function show(i) {
+    btns.forEach(b => b.setAttribute("aria-selected", String(b.dataset.i == i)));
+    panel.innerHTML = "<h3>" + steps[i][0] + "</h3><p>" + steps[i][1] + "</p>";
+  }
+  btns.forEach(b => b.addEventListener("click", () => show(b.dataset.i)));
+  show(0);
+</script>
+</body>
+</html>
