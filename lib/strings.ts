@@ -54,6 +54,9 @@ export const STRINGS = {
     accessory: "Accessory",
   },
   error: {
-    generic: "Something went wrong putting your looks together. Please try again.",
+    heading: "That didn't quite work",
+    message: "Something went wrong while I was putting your looks together. Your answers are saved, so you can try again.",
+    retry: "Try again",
+    startOver: "Start over",
   },
 } as const;

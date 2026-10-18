@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { ErrorMessage } from "@/components/ErrorMessage";
 import { EventInput, type Guidance } from "@/components/EventInput";
 import { FollowUpQuestions } from "@/components/FollowUpQuestions";
 import { LoadingState } from "@/components/LoadingState";
@@ -10,7 +11,7 @@ import type { Answer, Gender, Outfit, Question } from "@/lib/schemas";
 import { STRINGS } from "@/lib/strings";
 import styles from "./page.module.css";
 
-type Step = "start" | "loadingQuestions" | "questions" | "loadingOutfits" | "results";
+type Step = "start" | "loadingQuestions" | "questions" | "loadingOutfits" | "results" | "error";
 
 export default function Home() {
   const [step, setStep] = useState<Step>("start");
@@ -19,54 +20,57 @@ export default function Home() {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [gender, setGender] = useState<Gender>("women");
   const [outfits, setOutfits] = useState<Outfit[]>([]);
-  const [error, setError] = useState<string | null>(null);
   const inFlight = useRef(false);
+  // Repeats the request that failed, with the same event/answers, so "Try again" never loses input.
+  const retryLast = useRef<(() => void) | null>(null);
 
-  async function runGuarded(task: () => Promise<void>): Promise<void> {
+  async function runGuarded(task: () => Promise<void>, retry: () => void): Promise<void> {
     if (inFlight.current) return;
     inFlight.current = true;
-    setError(null);
     try {
       await task();
+    } catch {
+      retryLast.current = retry;
+      setStep("error");
     } finally {
       inFlight.current = false;
     }
   }
 
   function handleEvent(nextEvent: string): Promise<void> {
-    return runGuarded(async () => {
-      setEvent(nextEvent);
-      setGuidance(null);
-      setStep("loadingQuestions");
-      try {
+    return runGuarded(
+      async () => {
+        setEvent(nextEvent);
+        setGuidance(null);
+        setStep("loadingQuestions");
         const result = await fetchQuestions({ event: nextEvent });
         if (result.usable) {
           setQuestions(result.questions);
           setStep("questions");
         } else {
-          setGuidance({ message: result.guidance ?? STRINGS.error.generic, example: result.exampleEvent });
+          setGuidance({ message: result.guidance ?? STRINGS.error.message, example: result.exampleEvent });
           setStep("start");
         }
-      } catch {
-        setError(STRINGS.error.generic);
-        setStep("start");
-      }
-    });
+      },
+      () => void handleEvent(nextEvent),
+    );
   }
 
   function handleAnswers(nextGender: Gender, answers: Answer[]): Promise<void> {
-    return runGuarded(async () => {
-      setGender(nextGender);
-      setStep("loadingOutfits");
-      try {
+    return runGuarded(
+      async () => {
+        setGender(nextGender);
+        setStep("loadingOutfits");
         const result = await fetchOutfits({ event, gender: nextGender, answers });
         setOutfits(result.outfits);
         setStep("results");
-      } catch {
-        setError(STRINGS.error.generic);
-        setStep("questions");
-      }
-    });
+      },
+      () => void handleAnswers(nextGender, answers),
+    );
+  }
+
+  function handleRetry(): void {
+    retryLast.current?.();
   }
 
   function handleStartOver(): void {
@@ -74,19 +78,13 @@ export default function Home() {
     setGuidance(null);
     setQuestions([]);
     setOutfits([]);
-    setError(null);
+    retryLast.current = null;
     setStep("start");
   }
 
   return (
     <main className={styles.main}>
       <p className={styles.brand}>{STRINGS.brand}</p>
-
-      {error && (
-        <p className={styles.error} role="alert">
-          {error}
-        </p>
-      )}
 
       {step === "start" && (
         <EventInput initialValue={event} guidance={guidance} onSubmit={handleEvent} />
@@ -103,6 +101,7 @@ export default function Home() {
       {step === "results" && (
         <OutfitList outfits={outfits} gender={gender} onStartOver={handleStartOver} />
       )}
+      {step === "error" && <ErrorMessage onRetry={handleRetry} onStartOver={handleStartOver} />}
     </main>
   );
 }
