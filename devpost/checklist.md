@@ -19,7 +19,7 @@ Build mode: fast
   Learner check: Run `npm run dev` and open http://localhost:3000. Type "romantic date with my wife at a fine-dining restaurant" and submit. Watch the loading animation, then read the five outfits. Do they make sense for the occasion, is the best one convincing, does the "why" give you confidence, and does it look like a fashion store?
   Commit: `Generate five ranked outfits with explanations from an event`
 
-- [ ] **2. The advisor asks tailored follow-ups first, and handles unusable input**
+- [x] **2. The advisor asks tailored follow-ups first, and handles unusable input**
   Becomes usable: The Start step shows the text box and event category chips. Submitting shows the fixed Men's/Women's question plus Claude's 2–4 event-specific questions as tap options. The outfits then reflect your answers. Input like "asdf" keeps you on Start with friendly guidance and an example.
   Why now: Follow-ups shape the kernel's output, so they come right after outfit quality is confirmed. They also give the link builder its reliable men's/women's value for slice 3.
   PRD ref: `prd.md > Event Input`, `prd.md > Follow-Up Questions`, `prd.md > States and Boundaries` (unusable input)
@@ -29,7 +29,7 @@ Build mode: fast
   Learner check: Open the app. Try once by typing your date and once by tapping a category. Answer the follow-ups and confirm the outfits fit your answers. Then type "asdf" and see what it tells you. Do the questions feel like "just enough"?
   Commit: `Add event categories, tailored follow-up questions, and input guidance`
 
-- [ ] **3. Open an outfit to see why it works and shop every piece on Amazon**
+- [x] **3. Open an outfit to see why it works and shop every piece on Amazon**
   Becomes usable: Each piece is drawn as a clothing illustration tinted to its color. Cards are collapsed by default. Tapping one expands it in place (one at a time) to show the full "why" and an Amazon search link for every piece, using its color and your men's/women's answer. The link opens in a new tab. "Start over" returns to Start.
   Why now: This completes the core journey end to end, and it depends on slice 2's gender value.
   PRD ref: `prd.md > Outfit Detail and Shopping Links`, `prd.md > The Core Journey` (steps 6, 7)
@@ -39,7 +39,7 @@ Build mode: fast
   Learner check: Run the whole journey. Tap the top outfit to expand it, read the "why," click two piece links, and check that Amazon shows something close, especially in color. Then press Start over.
   Commit: `Expand outfits to show reasoning and Amazon search links`
 
-- [ ] **4. Failures are friendly, and it's ready to demo**
+- [x] **4. Failures are friendly, and it's ready to demo**
   Becomes usable: If Claude fails, refuses, or the key is missing, you see a friendly message and "Try again," which keeps your answers. The look-and-feel polish is finished, and the README explains how to run it and record the demo.
   Why now: The happy path is complete, so this hardens the moments that would break the demo and closes out the remaining PRD states.
   PRD ref: `prd.md > States and Boundaries`, `prd.md > Look and Feel`
@@ -76,3 +76,6 @@ Activity mode:
 - Server-side `fallbacks: "default"` works with `client.beta.messages.parse` + `betaZodOutputFormat` (beta namespace, not `messages.parse`) — build-time check 3.
 - Next.js scaffold is v16.4.2; Vitest config is `vitest.config.mts` (ESM) instead of `.ts` — the project isn't `type: module`.
 - Slice 1 checkpoint: the learner liked the outfits but wanted to see each item, not just a color dot. They agreed to color-tinted clothing illustrations (no new service), folded into slice 3; the fallback is the current swatches. Product photos and AI images stay out of the PoC. Updated `prd.md > Look and Feel`/`Ranked Outfit Results`/`What We're Building`/`Non-Goals` and `spec.md > OutfitList and OutfitCard`/`File Structure`.
+- Amazon returns a bot-challenge page to automated requests, so link relevance (build-time check 2) can't be checked mechanically. Unit tests cover the URL format, a browser check confirmed real link queries (e.g. "Navy unstructured blazer men's"), and result relevance moves to the learner's hands-on check.
+- The browser check found the textarea didn't inherit the page font (it showed monospace). Fixed in `globals.css`.
+- ErrorMessage got a secondary "Start over" next to "Try again". Restarting the dev server reloads the page, so Try again was verified by making the first outfits request fail in the browser: the retry resent identical answers and loaded 5 outfits.
