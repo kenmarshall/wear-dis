@@ -3,7 +3,7 @@ doc: prd
 status: approved
 ---
 
-# Outfit Advisor (working name) — Product Requirements
+# Wear Dis — Product Requirements
 
 A personal fashion advisor for someone who doesn't know styles or which colors go together. You describe an event, answer a few tailored questions, and get about five complete outfits, ranked best first. Each one explains why it works and links every piece to Amazon.
 Source: `scope.md > The Unique Kernel`, `scope.md > Who It's For`.
@@ -117,4 +117,4 @@ Source: `scope.md > The POC Boundary` ("light links").
 - **Wardrobe management:** for now it suggests new items only.
 
 ## Open Questions
-- **Project name:** "Outfit Advisor" is a working name. A real name can be chosen any time before `6-ship`; it doesn't block `4-spec`.
+- **Project name:** "Wear Dis". "Dis" is Jamaican for "this", as in "wear this to this event". The learner chose it to add "a little bit of authentic me" so the app feels more human. It isn't aimed only at Jamaicans.

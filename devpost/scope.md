@@ -3,7 +3,7 @@ doc: scope
 status: approved
 ---
 
-# Outfit Advisor (working name)
+# Wear Dis
 
 A personal fashion advisor. You tell it about an event, and it recommends ranked, complete outfits. It explains why each one works, and every piece links to Amazon to buy.
 

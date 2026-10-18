@@ -2,10 +2,10 @@
 
 export const STRINGS = {
   meta: {
-    title: "Outfit Advisor",
+    title: "Wear Dis",
     description: "Tell us the occasion. We'll dress you for it and tell you why.",
   },
-  brand: "Outfit Advisor",
+  brand: "Wear Dis",
   start: {
     heading: "What's the occasion?",
     subheading: "Tell me where you're going and I'll put together looks that fit, and explain why.",

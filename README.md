@@ -1,4 +1,4 @@
-# Outfit Advisor
+# Wear Dis
 
 A personal fashion advisor for people who don't know how to dress for an occasion. Describe your event (or tap a category), answer a few quick questions, and get **five complete outfits ranked best-first**. Each one explains *why* it works for the occasion and why the colors go together. Every piece links to Amazon search results in its color.
 

@@ -3,7 +3,7 @@ doc: spec
 status: approved
 ---
 
-# Outfit Advisor (working name) — Technical Spec
+# Wear Dis — Technical Spec
 
 ## How This Works, In Plain Language
 The advisor is a **Next.js** web app that runs on your laptop. Next.js is React plus TypeScript, with a small server built in. It has three pieces:
@@ -139,7 +139,7 @@ The fixed "about you" question (`gender: "men" | "women"`) is defined in code, n
 ## File Structure
 
 ```
-outfit-advisor/            # project root (this folder)
+wear-dis/                  # project root (this folder)
 ├── app/
 │   ├── layout.tsx         # fonts (next/font), tokens.css import, <html> shell
 │   ├── tokens.css         # design tokens: colors, spacing, radii, font sizes (CSS variables)
