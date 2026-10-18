@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Outfit Advisor — App Map</title>
+<style>
+  :root {
+    --bg: #faf8f5; --ink: #1f1a17; --muted: #6b635b; --line: #e4ddd4;
+    --accent: #6b2737; --accent-soft: #f3e7e9; --card: #ffffff;
+    --serif: "Bodoni Moda", "Didot", "Bodoni 72", Georgia, serif;
+    --sans: Inter, -apple-system, "Segoe UI", system-ui, sans-serif;
+    --mono: ui-monospace, "SF Mono", Menlo, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #171412; --ink: #f1ece6; --muted: #a99f95; --line: #3a332e;
+            --accent: #d98a9b; --accent-soft: #2e1e22; --card: #201c19; color-scheme: dark; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.6 var(--sans); }
+  main { max-width: 760px; margin: 0 auto; padding: 48px 20px 80px; }
+  h1, h2 { font-family: var(--serif); font-weight: 500; letter-spacing: .01em; }
+  h1 { font-size: 2.2rem; margin: 0 0 4px; }
+  h2 { font-size: 1.5rem; margin: 48px 0 12px; border-bottom: 1px solid var(--line); padding-bottom: 6px; }
+  .eyebrow { text-transform: uppercase; letter-spacing: .16em; font-size: .75rem; color: var(--accent); margin: 0; }
+  .lede { color: var(--muted); margin-top: 8px; }
+  code { font-family: var(--mono); font-size: .88em; background: var(--accent-soft); padding: 1px 5px; border-radius: 4px; }
+  ul.pieces { padding-left: 20px; }
+  .diagram { overflow-x: auto; background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px; }
+  .diagram svg { display: block; min-width: 640px; width: 100%; height: auto; }
+  .diagram text { font-family: var(--sans); fill: var(--ink); }
+  .diagram .box { fill: var(--bg); stroke: var(--line); }
+  .diagram .ext { fill: var(--accent-soft); stroke: var(--accent); }
+  .diagram .arrow { stroke: var(--muted); fill: none; marker-end: url(#a); }
+  .diagram .small { font-size: 11px; fill: var(--muted); }
+  ol.route { list-style: none; padding: 0; counter-reset: s; }
+  ol.route > li { counter-increment: s; background: var(--card); border: 1px solid var(--line);
+                  border-radius: 12px; padding: 16px 18px 16px 60px; margin-bottom: 12px; position: relative; }
+  ol.route > li::before { content: counter(s); position: absolute; left: 18px; top: 16px; width: 28px; height: 28px;
+                  border-radius: 50%; background: var(--accent); color: var(--bg); display: grid; place-items: center;
+                  font-family: var(--serif); }
+  .where { font-family: var(--mono); font-size: .85rem; color: var(--accent); display: block; margin-bottom: 4px; }
+  details { margin-top: 8px; }
+  summary { cursor: pointer; color: var(--muted); font-size: .9rem; }
+  summary:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  pre { font-family: var(--mono); font-size: .8rem; background: var(--accent-soft); padding: 12px; border-radius: 8px; overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: .95rem; }
+  th, td { text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { font-weight: 600; width: 42%; }
+  .practice { background: var(--accent-soft); border-left: 3px solid var(--accent); padding: 16px 20px; border-radius: 0 12px 12px 0; }
+  .foot { color: var(--muted); font-size: .85rem; margin-top: 48px; }
+</style>
+</head>
+<body>
+<main>
+  <p class="eyebrow">App Map</p>
+  <h1>Outfit Advisor</h1>
+  <p class="lede">Describe an event (or tap a category), answer a few tailored questions, and get five complete outfits, ranked best first. Each one explains why it suits the occasion and why the colors work, and links every piece to Amazon search results.</p>
+
+  <h2>The main pieces</h2>
+  <ul class="pieces">
+    <li><strong>One page, several steps</strong>: <code>app/page.tsx</code> is the flow controller. It holds all session state and shows one step component at a time.</li>
+    <li><strong>Step components</strong> in <code>components/</code>: EventInput, FollowUpQuestions, LoadingState, OutfitList/OutfitCard, ErrorMessage.</li>
+    <li><strong>Two server routes</strong>, <code>app/api/questions</code> and <code>app/api/outfits</code>, keep the API key on the server and call Claude through <code>lib/claude.ts</code>.</li>
+    <li><strong>Shared rules</strong> in <code>lib/</code>: zod schemas and cleanup (<code>schemas.ts</code>), the stylist prompts (<code>prompts.ts</code>), Amazon link building (<code>amazon.ts</code>), and all on-screen text (<code>strings.ts</code>).</li>
+    <li><strong>Nothing is stored.</strong> Refresh the page and it starts over.</li>
+  </ul>
+
+  <h2>One action, end to end: “Find my outfits”</h2>
+  <div class="diagram" role="img" aria-label="Diagram: pressing Find my outfits in the browser calls fetchOutfits, which posts to the outfits route. The route calls getOutfits, which asks Claude Opus 5.5 for JSON. finalizeOutfits cleans the result, and OutfitCard renders five cards with Amazon links from buildAmazonSearchUrl.">
+    <svg viewBox="0 0 700 250" xmlns="http://www.w3.org/2000/svg">
+      <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#8a8178"/></marker></defs>
+      <text x="10" y="18" class="small">BROWSER</text>
+      <text x="370" y="18" class="small">SERVER (local Next.js)</text>
+      <line x1="355" y1="8" x2="355" y2="240" stroke="#8a8178" stroke-dasharray="4 4" opacity=".5"/>
+      <rect class="box" x="10" y="30" width="200" height="56" rx="10"/>
+      <text x="22" y="54" font-size="13">FollowUpQuestions</text>
+      <text x="22" y="72" class="small">tap “Find my outfits”</text>
+      <rect class="box" x="10" y="110" width="200" height="56" rx="10"/>
+      <text x="22" y="134" font-size="13">page.tsx · handleAnswers</text>
+      <text x="22" y="152" class="small">guard → lib/api.ts fetchOutfits</text>
+      <rect class="box" x="370" y="110" width="150" height="56" rx="10"/>
+      <text x="382" y="134" font-size="13">api/outfits POST</text>
+      <text x="382" y="152" class="small">validate request</text>
+      <rect class="box" x="370" y="30" width="150" height="56" rx="10"/>
+      <text x="382" y="54" font-size="13">claude.ts getOutfits</text>
+      <text x="382" y="72" class="small">+ prompts.ts</text>
+      <rect class="ext" x="550" y="30" width="140" height="56" rx="10"/>
+      <text x="562" y="54" font-size="13">Claude Opus 5.5</text>
+      <text x="562" y="72" class="small">structured JSON</text>
+      <rect class="box" x="370" y="186" width="150" height="50" rx="10"/>
+      <text x="382" y="208" font-size="13">finalizeOutfits</text>
+      <text x="382" y="224" class="small">exactly 5, ranked 1–5</text>
+      <rect class="box" x="10" y="186" width="200" height="50" rx="10"/>
+      <text x="22" y="208" font-size="13">OutfitList / OutfitCard</text>
+      <text x="22" y="224" class="small">buildAmazonSearchUrl per piece</text>
+      <path class="arrow" d="M110 86 V108"/>
+      <path class="arrow" d="M210 138 H368"/>
+      <path class="arrow" d="M445 110 V88"/>
+      <path class="arrow" d="M520 58 H548"/>
+      <path class="arrow" d="M620 86 Q620 211 522 211"/>
+      <path class="arrow" d="M370 211 H212"/>
+    </svg>
+  </div>
+
+  <h2>Reference route: three stops</h2>
+  <p>A reference route through the current code. It wasn't toured interactively; follow it any time to see how the same action is built.</p>
+  <ol class="route">
+    <li>
+      <span class="where">app/page.tsx → handleAnswers, runGuarded</span>
+      Once you've answered the questions, <code>handleAnswers</code> saves your Men's/Women's choice, switches to the loading step, and calls <code>fetchOutfits</code>. <code>runGuarded</code> is the double-tap guard. If anything throws, it remembers a retry closure (<code>retryLast</code>), so <strong>Try again</strong> resends exactly the same answers.
+    </li>
+    <li>
+      <span class="where">app/api/outfits/route.ts → POST · lib/claude.ts → getOutfits, askForJson</span>
+      The route validates the request body with <code>OutfitsRequestSchema</code>, so the gender and answers are required. Then <code>getOutfits</code> sends <code>OUTFITS_SYSTEM_PROMPT</code> plus <code>buildOutfitsUserMessage</code> to Claude, with a zod output format, so the reply arrives already parsed into the <code>Outfit</code> shape. Refusals and empty output become an <code>AdvisorError</code>, and the route turns that into a 500 that shows the friendly error screen.
+      <details><summary>Why there's also code-side cleanup</summary>
+        <p>The schema avoids length and regex limits so it works with structured outputs. <code>finalizeOutfits</code> in <code>lib/schemas.ts</code> enforces the rest: it drops empty outfits, requires at least five, sorts by rank, and renumbers 1–5. The tests in <code>tests/schemas.test.ts</code> cover it.</p>
+      </details>
+    </li>
+    <li>
+      <span class="where">components/OutfitCard.tsx · lib/amazon.ts → buildAmazonSearchUrl</span>
+      Each card draws every piece with <code>PieceIllustration</code> (an SVG tinted with <code>colorHex</code>). When expanded, it adds the two “why” sections and one link per piece. The link is a search URL built from color + search terms + men's/women's, e.g.
+      <pre>https://www.amazon.com/s?k=Navy+unstructured+blazer+men%27s</pre>
+      It's a search, not a product lookup, which is why results are approximate.
+    </li>
+  </ol>
+
+  <h2>To change this, start here</h2>
+  <table>
+    <tr><th>Any on-screen wording (buttons, headings, loading copy)</th><td><code>lib/strings.ts</code> → <code>STRINGS</code></td></tr>
+    <tr><th>How the stylist thinks, its tone, what it must include</th><td><code>lib/prompts.ts</code> → <code>OUTFITS_SYSTEM_PROMPT</code>, <code>QUESTIONS_SYSTEM_PROMPT</code></td></tr>
+    <tr><th>Number of outfits or questions</th><td><code>lib/schemas.ts</code> → <code>OUTFIT_COUNT</code>, <code>MAX_QUESTIONS</code></td></tr>
+    <tr><th>Event category chips</th><td><code>lib/categories.ts</code> → <code>EVENT_CATEGORIES</code></td></tr>
+    <tr><th>Show the details without a click</th><td><code>components/OutfitCard.tsx</code> (the <code>expanded</code> checks) and <code>components/OutfitList.tsx</code> (<code>expandedRank</code>)</td></tr>
+    <tr><th>Amazon query wording</th><td><code>lib/amazon.ts</code> → <code>buildAmazonSearchUrl</code>, tested in <code>tests/amazon.test.ts</code></td></tr>
+    <tr><th>Colors, fonts, spacing</th><td><code>app/tokens.css</code></td></tr>
+    <tr><th>Model or effort level</th><td><code>lib/claude.ts</code> → <code>askForJson</code> calls in <code>getQuestions</code>/<code>getOutfits</code></td></tr>
+  </table>
+
+  <h2>A practice to reuse</h2>
+  <div class="practice">
+    <p><strong>Decide the boundary before you build, so late feedback is cheap to judge.</strong></p>
+    <p>In final review, the Amazon results often didn't match the piece description. It wasn't a surprise and it didn't cause rework: <code>scope.md &gt; Explicitly Cut</code> had already recorded that exact matches would need Amazon's product API (an approved affiliate account), and that search links were the deliberate stand-in. Likewise, the idea of showing all card details up front was weighed against a named cost (the results page roughly doubling in length) and declined, leaving <code>prd.md &gt; Ranked Outfit Results</code> unchanged.</p>
+    <p>On your next project, write down each cut <em>with its reason</em> during scoping. When testing turns up something that “feels off”, check it against that list first. If it's an already-accepted tradeoff, it becomes a roadmap item, not a bug.</p>
+  </div>
+
+  <h2>Run it again</h2>
+  <pre>npm install
+cp .env.example .env.local   # add your ANTHROPIC_API_KEY
+npm run dev                  # open http://localhost:3000
+
+npm run typecheck &amp;&amp; npm test &amp;&amp; npm run build</pre>
+
+  <p class="foot">Snapshot of the code at commit <code>44c217a</code> on <code>main</code>. The code can drift after this; check the paths above against the current files.</p>
+</main>
+</body>
+</html>

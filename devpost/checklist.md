@@ -52,23 +52,25 @@ Build mode: fast
 ## Hands-on Checkpoints
 
 - [x] Early usable behavior explored — after slice 1 (outfit quality and look can still reshape prompts and styling)
-- [ ] Final kick-the-tires exploration and feedback completed
+- [x] Final kick-the-tires exploration and feedback completed
 
 ## Final Review
 
-- [ ] Final review complete — feedback resolved and learner confirms ready to ship
+Outcome: the learner tried the app and raised two points. (1) The "See why it works & shop" click felt unnecessary. Showing everything up front was proposed, but after weighing the doubled page length they chose to keep the expand behavior as it is. (2) Amazon search results often don't closely match the piece description. They judged this fine for the demo; exact matches would need Amazon's product API, which `scope.md > Explicitly Cut` already excludes. No code changes.
+
+- [x] Final review complete — feedback resolved and learner confirms ready to ship
 
 ## Code Tour and App Map
 
-- [ ] Learning activity complete — guided route, focused alternative, prior practice connected, or brief recap
-- [ ] Optional edit and transfer reflection addressed — offered/declined/already covered/not applicable as appropriate
-- [ ] `devpost/app-map.html` generated from finished code, checked, and shown, including a project-grounded practice to reuse
+- [x] Learning activity complete — guided route, focused alternative, prior practice connected, or brief recap
+- [x] Optional edit and transfer reflection addressed — offered/declined/already covered/not applicable as appropriate
+- [x] `devpost/app-map.html` generated from finished code, checked, and shown, including a project-grounded practice to reuse
 
-Activity and evidence:
-Route and stops:
-Edit outcome:
-Reflection:
-Activity mode:
+Activity and evidence: prior practice connected. In final review, the Amazon-mismatch observation was checked against `scope.md > Explicitly Cut` (product API already cut, with its reason), and the show-everything idea was weighed against its stated cost and declined. Neither caused rework.
+Route and stops: not toured interactively; the reference route in the app map is `app/page.tsx` handleAnswers → `app/api/outfits/route.ts` POST + `lib/claude.ts` getOutfits → `components/OutfitCard.tsx` + `lib/amazon.ts` buildAmazonSearchUrl.
+Edit outcome: not applicable. The learner chose to keep the code as is.
+Reflection: one optional transfer question offered.
+Activity mode: focused alternative (prior practice connected); map at `devpost/app-map.html`.
 
 ## Revisions
 
