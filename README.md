@@ -33,7 +33,7 @@ npm run build
 
 ## Demo walkthrough
 
-1. Type "romantic date with my wife at a fine-dining restaurant" and press **Continue**.
+1. Type "romantic dinner date at a fine-dining restaurant" and press **Continue**.
 2. Pick **Men's** or **Women's** and answer the follow-up questions, then press **Find my outfits**.
 3. Wait about 30 seconds while the loading animation runs.
 4. Browse the five ranked looks and tap **See why it works & shop** on the best pick.

@@ -18,7 +18,7 @@ Why this shape: it's one project with one command to run, two AI calls per sessi
 PRD ref: `prd.md > The Core Journey`.
 
 1. **You open `localhost:3000`.** The page shows the **Start step**: a text box plus the event category chips from `lib/categories.ts`.
-2. **You type "romantic date with my wife, fine dining" and submit, or tap a category.** The page sends `{ event }` to `POST /api/questions`.
+2. **You type "romantic dinner date, fine dining" and submit, or tap a category.** The page sends `{ event }` to `POST /api/questions`.
 3. **The questions route** asks Claude to judge whether the input is a dressable event and, if so, write 2–4 event-specific questions with tap options. Claude returns JSON in the `QuestionsResponse` shape. The route validates it and sends it back.
    - If the input isn't usable (e.g. "asdf"), the page stays on Start and shows Claude's friendly guidance plus an example.
 4. **The page shows the Follow-up step.** There's one fixed "about you" question (Men's / Women's clothing), always asked first, followed by Claude's event questions. You tap an answer for each.

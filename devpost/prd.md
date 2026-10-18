@@ -12,7 +12,7 @@ Source: `scope.md > The Unique Kernel`, `scope.md > Who It's For`.
 Source: `scope.md > The Core Loop`, `scope.md > What "Working" Looks Like`.
 
 1. **Start.** You open the advisor and see a text box asking about your event, with event categories you can tap underneath.
-2. **Describe the event.** You either type it in your own words (e.g. "a romantic date with my wife at a fine-dining restaurant") or tap the closest category, then submit.
+2. **Describe the event.** You either type it in your own words (e.g. "a romantic dinner date at a fine-dining restaurant") or tap the closest category, then submit.
 3. **Answer follow-ups.** The advisor asks a few questions:
    - About you, every time: e.g. men's or women's clothing.
    - About the event, chosen by the advisor for that event type, each with tap-to-choose options.
