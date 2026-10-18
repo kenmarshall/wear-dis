@@ -1,4 +1,4 @@
-import type { OutfitsRequest, OutfitsResponse } from "./schemas";
+import type { OutfitsRequest, OutfitsResponse, QuestionsRequest, QuestionsResponse } from "./schemas";
 
 // Browser-side helpers for the app's API routes.
 
@@ -18,4 +18,8 @@ async function postJson<T>(url: string, payload: unknown): Promise<T> {
 
 export function fetchOutfits(request: OutfitsRequest): Promise<OutfitsResponse> {
   return postJson<OutfitsResponse>("/api/outfits", request);
+}
+
+export function fetchQuestions(request: QuestionsRequest): Promise<QuestionsResponse> {
+  return postJson<QuestionsResponse>("/api/questions", request);
 }

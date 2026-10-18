@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
   finalizeOutfits,
-  InvalidOutfitsError,
+  finalizeQuestions,
+  InvalidOutputError,
   isHexColor,
   OutfitsRequestSchema,
   type Outfit,
@@ -39,7 +40,7 @@ describe("finalizeOutfits", () => {
 
   it("rejects fewer than five usable outfits", () => {
     const outfits = [outfit(1), outfit(2), outfit(3), outfit(4), outfit(5, 0)];
-    expect(() => finalizeOutfits({ outfits })).toThrow(InvalidOutfitsError);
+    expect(() => finalizeOutfits({ outfits })).toThrow(InvalidOutputError);
   });
 });
 
@@ -53,8 +54,56 @@ describe("isHexColor", () => {
 
 describe("OutfitsRequestSchema", () => {
   it("trims the event and rejects empty or overlong input", () => {
-    expect(OutfitsRequestSchema.parse({ event: "  date night  " }).event).toBe("date night");
-    expect(OutfitsRequestSchema.safeParse({ event: "   " }).success).toBe(false);
-    expect(OutfitsRequestSchema.safeParse({ event: "x".repeat(301) }).success).toBe(false);
+    const base = { gender: "men", answers: [] };
+    expect(OutfitsRequestSchema.parse({ ...base, event: "  date night  " }).event).toBe("date night");
+    expect(OutfitsRequestSchema.safeParse({ ...base, event: "   " }).success).toBe(false);
+    expect(OutfitsRequestSchema.safeParse({ ...base, event: "x".repeat(301) }).success).toBe(false);
+  });
+
+  it("requires gender and answers", () => {
+    expect(OutfitsRequestSchema.safeParse({ event: "date" }).success).toBe(false);
+    expect(OutfitsRequestSchema.safeParse({ event: "date", gender: "other", answers: [] }).success).toBe(false);
+  });
+});
+
+describe("finalizeQuestions", () => {
+  it("dedupes options, drops questions with fewer than two, caps at four and renumbers ids", () => {
+    const result = finalizeQuestions({
+      usable: true,
+      guidance: null,
+      exampleEvent: null,
+      questions: [
+        { id: "a", text: "Indoors or outdoors?", options: ["Indoors", "Indoors", " Outdoors "] },
+        { id: "b", text: "Only one option", options: ["Yes"] },
+        { id: "c", text: "Q3", options: ["1", "2"] },
+        { id: "d", text: "Q4", options: ["1", "2"] },
+        { id: "e", text: "Q5", options: ["1", "2"] },
+        { id: "f", text: "Q6", options: ["1", "2"] },
+      ],
+    });
+    expect(result.questions.map((q) => q.id)).toEqual(["q1", "q2", "q3", "q4"]);
+    expect(result.questions[0].options).toEqual(["Indoors", "Outdoors"]);
+    expect(result.questions.map((q) => q.text)).not.toContain("Only one option");
+  });
+
+  it("passes guidance through for unusable input and clears questions", () => {
+    const result = finalizeQuestions({
+      usable: false,
+      guidance: "Tell me about an event",
+      exampleEvent: "A friend's wedding",
+      questions: [{ id: "x", text: "ignored", options: ["a", "b"] }],
+    });
+    expect(result).toEqual({
+      usable: false,
+      guidance: "Tell me about an event",
+      exampleEvent: "A friend's wedding",
+      questions: [],
+    });
+  });
+
+  it("rejects a usable result with no usable questions", () => {
+    expect(() =>
+      finalizeQuestions({ usable: true, guidance: null, exampleEvent: null, questions: [] }),
+    ).toThrow(InvalidOutputError);
   });
 });
