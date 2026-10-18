@@ -51,6 +51,8 @@ Not verified yet, check early in the build: the exact current Next.js major vers
   5. Expand the top card.
   6. Click one Amazon link.
 - **Submission:** a short demo video plus a public GitHub repo. No deployment is planned. If you change your mind, Vercel is the natural target, with an overuse guard added first.
+- **Public repository:** https://github.com/kenmarshall/wear-dis
+- **Demo video:** not recorded yet.
 
 ## Look and Feel
 Carried forward from `prd.md > Look and Feel` and `scope.md > Inspiration & Identity`.
