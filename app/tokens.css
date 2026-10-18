@@ -13,7 +13,7 @@
   --color-error: #8a2a1f;
   --color-error-soft: #f8e9e6;
   --color-swatch-fallback: #d9d3cb;
-  --color-swatch-ring: rgba(26, 23, 20, 0.15);
+  --color-illustration-line: rgba(26, 23, 20, 0.55);
 
   /* Typography — set by next/font in layout.tsx */
   --font-display: var(--font-bodoni), "Didot", "Bodoni 72", Georgia, serif;
@@ -46,7 +46,7 @@
   --radius-md: 12px;
   --radius-pill: 999px;
   --touch-target: 44px;
-  --swatch-size: 22px;
+  --illustration-size: 56px;
   --content-width: 640px;
   --border-width: 1px;
   --focus-ring: 0 0 0 3px var(--color-accent-soft), 0 0 0 4px var(--color-accent);

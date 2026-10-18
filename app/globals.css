@@ -33,6 +33,7 @@ p {
 }
 
 button,
+textarea,
 input {
   font: inherit;
   color: inherit;

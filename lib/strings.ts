@@ -38,7 +38,12 @@ export const STRINGS = {
     whyOccasion: "Why it works for the occasion",
     whyColors: "Why the colors work",
     piecesLabel: "Pieces in this outfit",
-    swatchLabel: (colorName: string): string => `Color: ${colorName}`,
+    expand: "See why it works & shop",
+    collapse: "Hide details",
+    shop: "Shop on Amazon",
+    shopLabel: (colorName: string, pieceName: string): string =>
+      `Shop ${colorName} ${pieceName} on Amazon (opens in a new tab)`,
+    startOver: "Start over with a new occasion",
   },
   slots: {
     top: "Top",

@@ -17,6 +17,7 @@ export default function Home() {
   const [event, setEvent] = useState("");
   const [guidance, setGuidance] = useState<Guidance | null>(null);
   const [questions, setQuestions] = useState<Question[]>([]);
+  const [gender, setGender] = useState<Gender>("women");
   const [outfits, setOutfits] = useState<Outfit[]>([]);
   const [error, setError] = useState<string | null>(null);
   const inFlight = useRef(false);
@@ -53,11 +54,12 @@ export default function Home() {
     });
   }
 
-  function handleAnswers(gender: Gender, answers: Answer[]): Promise<void> {
+  function handleAnswers(nextGender: Gender, answers: Answer[]): Promise<void> {
     return runGuarded(async () => {
+      setGender(nextGender);
       setStep("loadingOutfits");
       try {
-        const result = await fetchOutfits({ event, gender, answers });
+        const result = await fetchOutfits({ event, gender: nextGender, answers });
         setOutfits(result.outfits);
         setStep("results");
       } catch {
@@ -65,6 +67,15 @@ export default function Home() {
         setStep("questions");
       }
     });
+  }
+
+  function handleStartOver(): void {
+    setEvent("");
+    setGuidance(null);
+    setQuestions([]);
+    setOutfits([]);
+    setError(null);
+    setStep("start");
   }
 
   return (
@@ -89,7 +100,9 @@ export default function Home() {
       {step === "loadingOutfits" && (
         <LoadingState message={STRINGS.loading.outfitsMessage} detail={STRINGS.loading.outfitsDetail} />
       )}
-      {step === "results" && <OutfitList outfits={outfits} />}
+      {step === "results" && (
+        <OutfitList outfits={outfits} gender={gender} onStartOver={handleStartOver} />
+      )}
     </main>
   );
 }
